@@ -1,6 +1,6 @@
 // Function to handle showing the page action
 function showPageAction(tabId) {
-    chrome.action.show(tabId);
+    chrome.action.enable(tabId);
 }
 
 // Function to handle toggling the slider
