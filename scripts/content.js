@@ -310,9 +310,9 @@ function extractCertDetails(item) {
   const url = elem[4]?.querySelector('a')?.href || "";
   const name = getCleanText(firstdiv[0].querySelector('span > span')?.textContent || "");
   const issuedby = getCleanText(firstdiv[1].querySelector('span > span')?.textContent || "");
-  const issuedon = getCleanText(firstdiv[2]?.querySelector('span > span')?.textContent || "");
+  let issuedon = getCleanText(firstdiv[2]?.querySelector('span > span')?.textContent || "");
   const expiration = issuedon ? issuedon.split('·')[1] : "";
-  const issuedon = issuedon ? issuedon.split('·')[0]?.split('Issued ')[1] || "" : "";
+  issuedon = issuedon ? issuedon.split('·')[0]?.split('Issued ')[1] || "" : "";
 
   return {
     id: i,
