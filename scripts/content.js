@@ -1,4 +1,10 @@
 // Utility functions
+
+/**
+ * Cleans the text by removing multiple spaces, line breaks, and unnecessary strings like '...', 'See more', 'See less'.
+ * @param {string} text - The text to be cleaned.
+ * @returns {string|null} - The cleaned text or null if the input is falsy.
+ */
 function getCleanText(text) {
     const regexRemoveMultipleSpaces = / +/g;
     const regexRemoveLineBreaks = /(\r\n\t|\n|\r\t)/gm;
@@ -14,6 +20,10 @@ function getCleanText(text) {
       .trim();
 }
 
+/**
+ * Initiates the save to PDF process by finding and clicking the 'Save to PDF' button.
+ * If no such button is found, it alerts the user.
+ */
 function savePDF() {
   const spanList = document.getElementsByTagName("span");
   for (let span of spanList) {
@@ -25,6 +35,10 @@ function savePDF() {
   alert("No option to download profile.");
 }
 
+/**
+ * Expands all sections of the profile by clicking on 'See more' buttons.
+ * This ensures that all data is visible for extraction.
+ */
 function expandButtons() {
   const selectors = [
     '.pv-profile-section.pv-about-section .lt-line-clamp__more',
@@ -42,6 +56,10 @@ function expandButtons() {
 }
 
 // Main function
+
+/**
+ * Main function that initializes the extension and sets up event listeners.
+ */
 function main() {
   const sliderInnerHTMLString = `
     <!-- HEADER IS HERE -->
@@ -118,11 +136,17 @@ function main() {
   };
 }
 
+/**
+ * Clears the text in all specified text areas.
+ */
 function clearText() {
   const ids = ['basicprofile', 'educationtext', 'experiencetext', 'skillstext', 'certificationstext'];
   ids.forEach(id => document.getElementById(id).value = "");
 }
 
+/**
+ * Saves the profile data to a file. Prompts the user for a filename and creates a downloadable file.
+ */
 function saveProfileData() {
   const textBoxIds = ['basicprofile', 'educationtext', 'experiencetext', 'skillstext', 'certificationstext'];
   const profileData = {};
@@ -145,12 +169,19 @@ function saveProfileData() {
   }, 0);
 }
 
+/**
+ * Prints the user's name on the slider header.
+ */
 function printName() {
   const uname = document.querySelector('div.pv-text-details__left-panel > div > h1') || document.getElementsByClassName('artdeco-entity-lockup__title ember-view')[0];
   const cleanName = getCleanText(uname?.textContent || "");
   document.getElementById('slider').querySelector('#sheaderheader').innerHTML = `<h1>${cleanName}</h1>`;
 }
 
+/**
+ * Generates the slider DOM element and appends it to the body.
+ * @param {string} sliderInnerHTMLString - The HTML string for the slider.
+ */
 function sliderGen(sliderInnerHTMLString) {
   const slider = document.createElement("div");
   slider.id = "slider";
@@ -158,12 +189,19 @@ function sliderGen(sliderInnerHTMLString) {
   document.body.prepend(slider);
 }
 
+/**
+ * Toggles the visibility of the slider by changing its width.
+ */
 function slider() {
   const slider = document.getElementById("slider");
   const styler = slider.style;
   styler.width = styler.width === "0px" ? "400px" : "0px";
 }
 
+/**
+ * Extracts the profile data from the page.
+ * @returns {Object} - The extracted profile data.
+ */
 function extract() {
   const profileSection = document.querySelector(".pv-top-card");
   const fullName = profileSection?.querySelector('h1')?.textContent || null;
@@ -186,6 +224,9 @@ function extract() {
   };
 }
 
+/**
+ * Extracts certification data from the page.
+ */
 function extractCert() {
   const anchors = [
     { id: 'licenses_and_certifications', checked: !document.getElementById('deepscan').checked },
@@ -196,6 +237,9 @@ function extractCert() {
   document.getElementById('certificationstext').value = JSON.stringify({ name: 'licenses', data: certs });
 }
 
+/**
+ * Extracts skill data from the page.
+ */
 function extractSkills() {
   const anchors = [
     { id: 'skills', checked: !document.getElementById('deepscan').checked },
@@ -206,6 +250,9 @@ function extractSkills() {
   document.getElementById('skillstext').value = JSON.stringify({ name: 'skills', data: skills });
 }
 
+/**
+ * Extracts experience data from the page.
+ */
 function extractExperience() {
   const anchors = [
     { id: 'experience', checked: !document.getElementById('deepscan').checked },
@@ -216,6 +263,9 @@ function extractExperience() {
   document.getElementById('experiencetext').value = JSON.stringify(exp);
 }
 
+/**
+ * Extracts education data from the page.
+ */
 function extractEducation() {
   const anchors = [
     { id: 'education', checked: true },
@@ -226,6 +276,12 @@ function extractEducation() {
   document.getElementById('educationtext').value = JSON.stringify({ name: 'education', data: education });
 }
 
+/**
+ * Extracts data from the specified anchors using the provided detail extractor function.
+ * @param {Array} anchors - An array of anchor objects containing id and checked status.
+ * @param {Function} detailExtractor - The function to extract details from each item.
+ * @returns {Array} - The extracted data.
+ */
 function extractData(anchors, detailExtractor) {
   for (const anchor of anchors) {
     if (anchor.id) {
@@ -243,6 +299,11 @@ function extractData(anchors, detailExtractor) {
   return [];
 }
 
+/**
+ * Extracts details for each certification item.
+ * @param {HTMLElement} item - The certification item element.
+ * @returns {Object} - The extracted certification details.
+ */
 function extractCertDetails(item) {
   const elem = item.firstElementChild.firstElementChild.nextElementSibling.querySelectorAll('div');
   const firstdiv = elem[0].querySelector('a') ? elem[0].querySelector('a').children : elem[1].children;
@@ -263,12 +324,22 @@ function extractCertDetails(item) {
   };
 }
 
+/**
+ * Extracts details for each skill item.
+ * @param {HTMLElement} item - The skill item element.
+ * @returns {Object} - The extracted skill details.
+ */
 function extractSkillDetails(item) {
   const elem = item.firstElementChild.firstElementChild.nextElementSibling.querySelectorAll('div');
   const skill = getCleanText(elem[0]?.querySelector('div > span > span').textContent || "");
   return { id: i, title: skill };
 }
 
+/**
+ * Extracts details for each experience item.
+ * @param {HTMLElement} item - The experience item element.
+ * @returns {Object} - The extracted experience details.
+ */
 function extractExperienceDetails(item) {
   const elem = item.querySelector('div > div').nextElementSibling;
   const company = elem.querySelector('div > a > div > span > span')?.textContent || "";
@@ -315,6 +386,11 @@ function extractExperienceDetails(item) {
   };
 }
 
+/**
+ * Extracts details for each education item.
+ * @param {HTMLElement} item - The education item element.
+ * @returns {Object} - The extracted education details.
+ */
 function extractEducationDetails(item) {
   const elem = item.firstElementChild.firstElementChild.nextElementSibling.querySelectorAll('div');
   const firstdiv = elem[0].querySelector('a') ? elem[0].querySelector('a').children : elem[1].children;
